@@ -71,7 +71,7 @@ const Validation = async() => {
     // gathers all validation errors (if any) from the previous middlewares.
 
     if(!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() })
+      return res.status(400).json({ errors: errors.array() });
       // errors.array() gives a list of all failed validation fields.
     }
     res.send('User is valid');
@@ -81,4 +81,4 @@ const Validation = async() => {
   app.listen(3000);
 }
 
-Validation();
+// Validation();
