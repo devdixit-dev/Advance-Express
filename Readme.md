@@ -33,21 +33,32 @@ import NodeCache from 'node-cache';
 import express from 'express';
 
 const app = express();
-const cache = new NodeCache({ stdTTL: 60 }); // 60 seconds TTL
+const cache = new NodeCache({ stdTTL: 60 })
+// the cache expires in 60 seconds
+// after 60 seconds the cache will automatically clear, by node-cache
 
-app.get('/data', (req, res) => {
+app.get('/data', async (req, res) => {
   const cachedData = cache.get('data');
 
-  if (cachedData) {
+  if(cachedData) {
     return res.json({ fromCache: true, data: cachedData });
+    // check if data is avail in the node-cache, then return cachedData in data object
   }
 
-  const newData = { value: Math.random() }; // Simulated DB/API response
+  const response = await fetch('https://jsonplaceholder.typicode.com/todos');
+  // else request to the database and get the data from backend api
+  
+  const newData = await response.json();
   cache.set('data', newData);
+  // after getting the data from backend api, store newData as data in node-cache
 
-  res.json({ fromCache: false, data: newData });
+  return res.json({
+    fromCache: false,
+    data: newData
+  });
+  // after storing the newData, return the newData from database
 });
 
-app.listen(3000);
-
+app.listen(4000);
 ```
+- Note: Prefer **Redis** for production use

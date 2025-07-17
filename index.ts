@@ -1,7 +1,9 @@
 import express from 'express';
 import rateLimiter from 'express-rate-limit';
 
-import NodeCache from 'node-cache'
+import NodeCache from 'node-cache';
+
+import validator from 'express-validator';
 
 const RateLimiter = async () => {
   const app = express();
@@ -38,7 +40,7 @@ const CachingWithExpress = async() => {
 
     const response = await fetch('https://jsonplaceholder.typicode.com/todos');
     // else request to the database and get the data from backend api
-    const newData = response.json();
+    const newData = await response.json();
     cache.set('data', newData);
     // after getting the data from backend api, store newData as data in node-cache
     return res.json({
@@ -50,4 +52,22 @@ const CachingWithExpress = async() => {
 
   app.listen(4000);
 }
-CachingWithExpress();
+// CachingWithExpress();
+
+const Validation = async() => {
+  const app = express();
+  app.use(express.json());
+
+  app.post('/user', [
+    validator.body('email').isEmail(),
+    validator.body('password').isLength({ min: 6 })
+  ], (req: any, res: any) => {
+    const errors = validator.validationResult(req);
+    if(!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() })
+    }
+    res.send('User is valid');
+  })
+  
+  app.listen(3000);
+}
