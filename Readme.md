@@ -62,3 +62,36 @@ app.get('/data', async (req, res) => {
 app.listen(4000);
 ```
 - Note: Prefer **Redis** for production use
+
+# 3. Validation
+- Ensure incoming data is correct and secure
+- Tool used: `express-validator`
+
+``` js
+import validator from 'express-validator';
+
+const app = express();
+app.use(express.json());
+
+app.post('/user', [
+  validator.body('email').isEmail(),
+  // checks if email exists and is in valid email format.
+
+  validator.body('password').isLength({ min: 6 })
+  // checks if password has at least 5 characters.
+
+], (req: any, res: any) => {
+  const errors = validator.validationResult(req);
+  // Function to collect the result of validation and check for errors.
+  // gathers all validation errors (if any) from the previous middlewares.
+
+  if(!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() })
+    // errors.array() gives a list of all failed validation fields.
+  }
+  res.send('User is valid');
+  // If there are no errors, continue to execute main logic
+})
+ 
+app.listen(3000);
+```
