@@ -95,3 +95,33 @@ app.post('/user', [
  
 app.listen(3000);
 ```
+
+# 4. Error Handling
+- Centralize error logic and avoid crashes
+
+``` js
+import express from 'express';
+
+const app = express();
+
+app.get('/', (req, res) => {
+  throw new Error('Unexpected Error!');
+});
+
+// 404 Not Found Middleware
+app.use((req, res, next) => {
+  res.status(404).json({ message: 'Not Found' });
+});
+
+// Global Error Handler
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({
+    status: 'error',
+    message: err.message || 'Internal Server Error'
+  });
+});
+
+app.listen(3000);
+```
+- Good practice: Create a CustomError class and pass it to the global handler.

@@ -78,7 +78,26 @@ const Validation = async() => {
     // If there are no errors, continue to execute main logic
   })
   
-  app.listen(3000);
+  app.listen(5000);
 }
-
 // Validation();
+
+const ErrorHandling = async() => {
+  const app = express();
+
+  app.use((req, res, next) => {
+    return res.status(400).json({ message: 'Not found' });
+  });
+  // 404 not found middleware
+
+  app.use((err: any, req: any, res: any, next: any) => { console.log(err.stack) 
+    res.status(500).json({
+      status: 'error',
+      message: err.message || 'Internal Server Error'
+    });
+  });
+  // global error handler
+
+  app.listen(6000)
+}
+// ErrorHandling();
